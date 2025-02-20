@@ -102,7 +102,7 @@ testcci<-mapply(cci, basic$Age, ci$MI, ci$CHF, ci$PVD,
                 ci$Stroke, ci$Dementia, ci$COPD, 
                 ci$RA, ci$lupus, ci$rheumatic.polymylagia,
                 ci$Peptic.Ulcer, ci$Liver.Disease, ci$hep.B, 
-                ci$hepatitis.C, ci$Diab, 
+                ci$hepatitis.C, ci$T2DM, 
                 ci$CKD, maligs$Cancer.type, maligs$`Metastasis.(y/n)`)
 
 cci_categories<-sapply(testcci, function(x){
@@ -121,7 +121,9 @@ cci_categories<-factor(cci_categories, levels=c("2", "3", "4", "\u22655"))
 
 setwd("../final.figures")
 tiff("3a-cci-surv.tiff", height=1800, width = 2700, units="px", res=300)
-survplot("Charlson Comorbidity Index", covs=c('cci_categories'), data=data.frame(basic[c(2,3)], cci_categories), groups=4)
+survplot("Charlson Comorbidity Index", covs=c('cci_categories'), 
+         data=data.frame(basic[c(2,3)], cci_categories), groups=4, 
+         pval.coord = c(108,0.65), pval.size=6)
 dev.off()
 
 tiff("3a-cci-age.tiff", height=900, width = 2700, units="px", res=300)
@@ -187,7 +189,7 @@ testccinoage<-mapply(cci_noage, ci$MI, ci$CHF, ci$PVD,
                 ci$Stroke, ci$Dementia, ci$COPD, 
                 ci$RA, ci$lupus, ci$rheumatic.polymylagia,
                 ci$Peptic.Ulcer, ci$Liver.Disease, ci$hep.B, 
-                ci$hepatitis.C, ci$Diab, 
+                ci$hepatitis.C, ci$T2DM, 
                 ci$CKD, maligs$Cancer.type, maligs$`Metastasis.(y/n)`)
 
 cci_noage_categories<-sapply(testccinoage, function(x){
@@ -205,7 +207,9 @@ cci_noage_categories<-factor(cci_noage_categories, levels=c("2", "3", "4", "\u22
 
 setwd("../final.figures")
 tiff("3b-cci-noage-surv.tiff", height=1800, width = 2700, units="px", res=300)
-survplot("Age-independent CCI", covs=c('cci_noage_categories'), data=data.frame(basic[c(2,3)], cci_noage_categories), groups=4)
+survplot("Age-independent CCI", covs=c('cci_noage_categories'), 
+         data=data.frame(basic[c(2,3)], cci_noage_categories), groups=4, 
+         pval.coord = c(108,0.65), pval.size=6)
 dev.off()
 
 tiff("3b-cci-age.tiff", height=900, width = 2700, units="px", res=300)

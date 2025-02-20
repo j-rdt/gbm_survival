@@ -51,7 +51,7 @@ cox_df<-data.frame(variable=variables,
                    lower=exp(confint(multi)[,1]), 
                    upper=exp(confint(multi)[,2]), 
                    display=paste0(round(exp(coef(multi)), 2), " (",round(exp(confint(multi)[,1]),2),"-", round(exp(confint(multi)[,2]),2), ")"),
-                   pval=tidy(multi)$p.value)
+                   pval=print_pvals(tidy(multi)$p.value))
 
 names(cox_df)<-c("Variable", "n", "", "est", "lower", "upper", "HR (95% CI)", "P value")
 

@@ -12,6 +12,8 @@ library(tidyr)
 library(ggplot2)
 library(ggsurvfit)
 
+options(scipen = 999) # turn off scientific notation
+
 has<-function(x){
   str_detect(x, "\\+|Y|^1")
 }
@@ -31,6 +33,18 @@ nastri<-function(dfdollar, what="both"){
     print("Invalid input to 'what', returning complete indices")
     rep(1:length(dfdollar))
   }
+}
+
+print_pval<-function(x){
+  if(x<0.0001){
+    "<0.0001"
+  } else {
+    sprintf('%.4f',x)
+  }
+}
+
+print_pvals<-function(vec){
+  sapply(vec, print_pval)
 }
 
 
@@ -146,7 +160,7 @@ trt$Bevacizumab<-factor(trt$Bevacizumab, levels = c("Not Received", "Received"))
 trt$`Initial.Chemo.w/radiation`<-factor(trt$`Initial.Chemo.w/radiation`, levels=c("Not Received", "Received"))
 ci$HTN<-factorPlus(ci$HTN)
 ci$HLD<-factorPlus(ci$HLD)
-ci$Diab<-factorPlus(ci$Diab)
+ci$T2DM<-factorPlus(ci$T2DM)
 
 ci$Obesity<-ifelse(ci$BMI>29.5, "+", "-")
 ci$Obesity<-factorPlus(ci$Obesity)

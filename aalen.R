@@ -24,5 +24,10 @@ tiff("aalen-variables.tiff", height=3600, width = 3600, units="px", res=300)
 autoplot(aa_fit, legend=F) + theme(legend.position = "none", 
                                    text = element_text(size = 20))
 dev.off()
+
+png("aalen-variables.png", height=3600, width = 3600, units="px", res=300)
+autoplot(aa_fit, legend=F) + theme(legend.position = "none", 
+                                   text = element_text(size = 20))
+dev.off()
 setwd("../gbm_survival")
 

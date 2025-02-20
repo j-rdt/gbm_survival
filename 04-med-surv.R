@@ -10,13 +10,13 @@ survplot("Hyperlipidemia", covs=c('HLD'), data=data.frame(basic[c(2,3)], HLD=sap
 dev.off()
 
 tiff("diab.tiff", height=1800, width = 1800, units="px", res=300)
-survplot("Diabetes", covs=c('Diab'), data=data.frame(basic[c(2,3)], Diab=sapply(ci$Diab, function(x){paste0(x, "Diab")})))
+survplot("Diabetes", covs=c('T2DM'), data=data.frame(basic[c(2,3)], T2DM=sapply(ci$T2DM, function(x){paste0(x, "T2DM")})))
 dev.off()
 
 obesity_data<-data.frame(basic[c(2,3)], Ob=sapply(ci$Obesity, function(x){paste0(x, "Obesity")}))
-obesity_data<-obesity_data[!is.na(basic$BMI.factor),]
+obesity_data<-obesity_data[!obesity_data$Ob=="NAObesity",]
 tiff("obesity.tiff", height=1800, width = 1800, units="px", res=300)
-survplot("Obesity", covs=c('Ob'), data=data.frame(basic[c(2,3)], Ob=ci$Obesity))
+survplot("Obesity", covs=c('Ob'), data=obesity_data)
 dev.off()
 
 tiff("copd.tiff", height=1800, width = 1800, units="px", res=300)
@@ -31,8 +31,11 @@ tiff("stroke.tiff", height=1800, width = 1800, units="px", res=300)
 survplot("Stroke", covs=c('Stroke'), data=data.frame(basic[c(2,3)], Stroke=sapply(ci$Stroke, function(x){paste0(x, "Stroke")})))
 dev.off()
 
+malig_data<-data.frame(basic[c(2,3)], malig=sapply(maligs$Additional.Malignancy, function(x){paste0(x, "Malignancy")}))
+#obesity_data<-obesity_data[!obesity_data$Ob=="NAObesity",]
 tiff("malig.tiff", height=1800, width = 1800, units="px", res=300)
-survplot("Additional Malignancy", covs=c('malig'), data=data.frame(basic[c(2,3)], malig=maligs$Additional.Malignancy), legend.coords=c(0.7,0.8))
+survplot("Additional Malignancy", covs=c('malig'), data=malig_data, legend.coords=c(0.7,0.8), 
+         pval.coord = c(63, 0.7))
 dev.off()
 
 setwd("../gbm_survival")

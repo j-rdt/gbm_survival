@@ -4,8 +4,14 @@ library(survivalAnalysis)
 library(ggsurvfit)
 library(survival)
 library(stringr)
-#source("../res/center_igraph_edges.R")
-#source("../res/num-to-colors.R")
+library(broom)
+library(forestploter)
+source("../res/center_igraph_edges.R")
+source("../res/num-to-colors.R")
+source("00-data-read-clean.R")
+source("1a-functions.R")
+
+options(scipen = 999) # turn off scientific notation
 
 
 rankings<-apply(ci, 2, function(x){sum(has(x), na.rm = TRUE)})
@@ -96,7 +102,7 @@ big<-data.frame(ci[names(ci) %in% names(ranked_List)], Addl.Maligs=maligs$Additi
 #big<-big[-c(1,2)]
 #rankings<-apply(big, 2, function(x){sum(has(x), na.rm = TRUE)})
 #ranked_list<-rankings[order(rankings, decreasing = TRUE)]
-big<-big[order(rankings, decreasing = TRUE)]
+big<-big[order(apply(big, 2, function(x){sum(has(x), na.rm = TRUE)}), decreasing = TRUE)]
 #sums<-sapply(names(big[-c(2,3)]), function(x){sum(has(x))})
 #names(sums)<-colnames(big)[3:length(names(big))]
 ll<-length(names(big))
@@ -122,15 +128,29 @@ radian.rescale <- function(x, start=0, direction=1) {
   c.rotate(scales::rescale(x, c(0, 2 * pi), range(x)))
 }
 
-lab.locs <- radian.rescale(x=1:length(ranked_list), direction=-1, start=0)
+lab.locs <- radian.rescale(x=1:length(ranked_List), direction=-1, start=0)
 lab.locs[11]<- lab.locs[11]+0.5
-my_labels<-names(ranked_list)
+
+lab.dist<-rep(1.5,19)
+lab.dist[6]<- lab.dist[6]+0.5
+lab.dist[12]<- lab.dist[12]+0.25
+lab.dist[11]<- lab.dist[11]+0.5
+lab.dist[15]<- lab.dist[15]+0.25
+lab.dist[17]<- lab.dist[17]+0.5
+
+my_labels<-names(ranked_List)
 my_labels[16]<-"Tobacco"
+my_labels[5]<-"T2DM"
+my_labels[6]<-"Additional \n Malignancy"
+my_labels[7]<-"Osteoarthritis"
+my_labels[8]<-"Depression"
+my_labels[11]<-"Hypo-\n thyroid"
+my_labels[15]<-"Sleep \n Apnea"
 
 setwd("../final.figures")
 tiff("5b-network.tiff", height=5600, width = 5600, units="px", res=300)
 plot.igraph(network, rescale=F, layout=layout.circle, 
-     vertex.label=paste(my_labels, ranked_list, sep="\n"),
+     vertex.label=paste(my_labels, ranked_List, sep="\n"),
      #vertex.label= sums20,
      vertex.size=logb(ranked_list, b=3), 
 #     edge.label=E(network)$weight, 
@@ -143,7 +163,7 @@ plot.igraph(network, rescale=F, layout=layout.circle,
 #             edge.label.x=center_igraph_edges(network, "x"),
 #             edge.label.y=center_igraph_edges(network, "y"),
      vertex.label.cex=3,
-vertex.label.dist=1.5,
+vertex.label.dist=lab.dist,
 vertex.label.degree=lab.locs,
 vertex.label.family="sans",
 #     edge.label.cex=0.4,
@@ -166,11 +186,14 @@ edgesByWeight[5]<-E(network)$weight[order(E(network)$weight, decreasing = TRUE)]
 
 obaf<-subset.make(ci, subset.find(ci, "Obesity & Afib"))
 obaf<-data.frame(basic[c(2,3)], obaf)
+obaf$Obesity<-paste(obaf$Obesity, "Obesity")
+obaf$Afib<-paste(obaf$Afib, "Afib")
+obaf<-obaf[!str_detect(obaf$Obesity, "NA"),]
 setwd("../final.figures")
 tiff("5c-surv.tiff", height=1800, width = 2700, units="px", res=300)
 survplotcombn("Atrial Fibrillation & Obesity", 
               covs=c("Afib", "Obesity"), 
-              data=data.frame(basic[c(2,3)], Afib=ci$Afib, Obesity=ci$Obesity))
+              data=obaf, pval.coord=c(91, 0.65),)
 dev.off()
 setwd("../gbm_survival")
 
@@ -206,7 +229,7 @@ fastpaircox2<-function(data, variables){
                      lower=exp(confint(uni)[,1]), 
                      upper=exp(confint(uni)[,2]), 
                      display=paste0(round(exp(coef(uni)), 2), " (",round(exp(confint(uni)[,1]),2),"-", round(exp(confint(uni)[,2]),2), ")"),
-                     pval=tidy(uni)$p.value)
+                     pval=print_pvals(tidy(uni)$p.value))
   
   names(cox_df)<-c("Variable", "n", "", "est", "lower", "upper", "HR (95% CI)", "P value")
   
