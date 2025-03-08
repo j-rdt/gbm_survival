@@ -51,7 +51,7 @@ print_pvals<-function(vec){
 #getwd()
 #setwd(".")
 #returnwd<-function(){setwd("C:/Users/jardi/Brown Dropbox/Jonathan Arditi/Documents/RwdLocal/GBMSurvey")}
-file<-"../GBM_analysis_no_dup.xlsx"
+file<-"GBM_analysis_no_dup.xlsx"
 
 #'
 cgn<-as.data.frame(read_xlsx(file, sheet=5)) # 1 = NO; 2=YES
@@ -138,7 +138,7 @@ names(basic)[5:6]<-c("MGMT.UME", "IDH.MUT")
 #for sleep apnea and osa merge
 ci$Apnea<-mapply(function(x,y){if ((x=="+" | y=="+") & (!is.na(x)) & (!is.na(y))) {"+"} else {"-"}}, ci$Apnea, ci$OSA)
 
-maligs<-as.data.frame(read_xlsx("../maligs_no_dup.xlsx", sheet=1))
+maligs<-as.data.frame(read_xlsx("maligs_no_dup.xlsx", sheet=1))
 names(maligs)<-str_replace_all(names(maligs), " ", ".")
 maligs[is.na(maligs)]<-0
 maligs<-maligs[-868,]
